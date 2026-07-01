@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hookah Store</title>
+    <meta name="description" content="Luxury hookah delivery with premium flavors and fast doorstep service." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <nav class="navbar">
+          <a class="brand" href="#">Hookah Store</a>
+          <div class="nav-links">
+            <a href="#products">Collection</a>
+            <a href="#about">About</a>
+            <a href="#checkout">Checkout</a>
+            <a href="/my-account.html" id="accountLink" style="display:none">Account / Orders</a>
+            <a href="/account.html" id="loginLink">Login / Register</a>
+            <a href="/admin.html" id="adminLink" style="display:none">Admin</a>
+            <a href="/sales.html" id="salesLink" style="display:none">Sales</a>
+            <a href="#" id="logoutLink" style="display:none">Logout</a>
+          </div>
+          <button class="cart-pill" id="cartToggle">Cart <span id="cartCount">0</span></button>
+        </nav>
+
+        <div class="hero-content">
+          <div class="hero-copy">
+            <p class="eyebrow">Luxury hookah • same-day delivery</p>
+            <h1>Smoke with velvet, delivered with ritual.</h1>
+            <p class="hero-text">
+              Discover handcrafted flavor blends, premium accessories, and discreet doorstep delivery across Makutano, Meru, Kambakia, KEMU, Giantune and Gitimbeni.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-btn" href="#products">Shop collection</a>
+              <a class="ghost-btn" href="#checkout">Book delivery</a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="smoke-ring"></div>
+            <img src="/Hookah%201.png" alt="Luxury hookah setup" />
+            <div class="ember ember-one"></div>
+            <div class="ember ember-two"></div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="info-strip" id="about">
+          <div>
+            <h3>Premium flavors</h3>
+            <p>Curated blends that balance richness, sweetness, and smooth smoke.</p>
+          </div>
+          <div>
+            <h3>Fast doorstep delivery</h3>
+            <p>Secure delivery in under 60 minutes in select zones.</p>
+          </div>
+          <div>
+            <h3>Flexible payments</h3>
+            <p>Pay via M-Pesa, card, or cash on delivery.</p>
+          </div>
+        </section>
+
+        <section class="products-section" id="products">
+          <div class="section-heading">
+            <p class="eyebrow">Featured collection</p>
+            <h2>Signature flavors</h2>
+          </div>
+          <div class="product-grid" id="productGrid"></div>
+        </section>
+
+        <section class="checkout-section" id="checkout">
+          <div class="checkout-card">
+            <div class="section-heading">
+              <p class="eyebrow">Checkout</p>
+              <h2>Order for doorstep delivery</h2>
+            </div>
+            <form id="checkoutForm">
+              <div class="form-grid">
+                <label>
+                  Full name
+                  <input type="text" id="name" required />
+                </label>
+                <label>
+                  Phone number
+                  <input type="tel" id="phone" required />
+                </label>
+              </div>
+              <label>
+                Delivery address
+                <textarea id="address" rows="3" required></textarea>
+              </label>
+              <div class="rental-card">
+                <label for="rentalOption">Pot rental</label>
+                <select id="rentalOption">
+                  <option value="none">No rental</option>
+                  <option value="1500">Rent a pot for KSh 1,500/night</option>
+                  <option value="2000">Rent a premium pot for KSh 2,000/night</option>
+                </select>
+                <p class="small-copy">Choose a nightly pot rental for your event or lounge setup.</p>
+              </div>
+              <div class="payment-options">
+                <label><input type="radio" name="payment" value="mpesa" checked /> M-Pesa</label>
+                <label><input type="radio" name="payment" value="card" /> Card</label>
+                <label><input type="radio" name="payment" value="cod" /> Cash on delivery</label>
+              </div>
+              <p class="small-copy">Delivery is available around Makutano, Meru, Kambakia, KEMU, Giantune and Gitimbeni.</p>
+              <button class="primary-btn full" type="submit">Place order</button>
+            </form>
+            <p id="orderMessage" class="order-message"></p>
+          </div>
+
+          <aside class="cart-card" id="cartPanel">
+            <div class="section-heading compact">
+              <p class="eyebrow">Your cart</p>
+              <h2>Current selection</h2>
+            </div>
+            <div id="cartItems" class="cart-items"></div>
+            <div class="cart-total">
+              <div><span>Subtotal</span><strong id="subtotal">KSh 0</strong></div>
+              <div><span>Delivery</span><strong>KSh 300</strong></div>
+              <div><span>Total</span><strong id="total">KSh 300</strong></div>
+            </div>
+            <a class="ghost-btn full" href="https://wa.me/254706245776?text=Hello%20Hookah%20Store%2C%20I%20would%20like%20to%20place%20an%20order." target="_blank">Chat on WhatsApp</a>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

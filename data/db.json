@@ -1,0 +1,140 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin User",
+      "email": "admin@hookah.store",
+      "passwordHash": "$2b$10$iqeFdvz3gaUTMkgbkhlnNuW/mXoAu0Ri67XdeX2iBNn7TmKIdWFhe",
+      "role": "admin",
+      "createdAt": "2026-06-27T21:18:02.476Z"
+    },
+    {
+      "id": 2,
+      "name": "Sales User",
+      "email": "sales@hookah.store",
+      "passwordHash": "$2b$10$4V/chef9q4ijod56m5jdXeat4A8kBwXbcX/8t3cVTACREtszSn5ra",
+      "role": "sales",
+      "createdAt": "2026-06-27T21:18:02.678Z"
+    },
+    {
+      "id": 1782595536867,
+      "name": "Muruthi",
+      "email": "muitamaxwell@gmail.com",
+      "passwordHash": "$2b$10$w1JcatfA1xX4ae85B8wiRu8N315bRoUdL8DxyH/oUMJ0RsafuOJ62",
+      "role": "user",
+      "createdAt": "2026-06-27T21:25:37.070Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Blueberry Mint",
+      "description": "Cool mint layered with dark berry sweetness for a smooth finish.",
+      "price": 3200,
+      "image": "/images/Al%20Fakher%2050g%20-%20Blueberry%20Mint%20.jpg",
+      "badge": "Bestseller",
+      "category": "flavor"
+    },
+    {
+      "id": 2,
+      "name": "Magic Love",
+      "description": "A lush fruit blend with playful sweetness and rich aroma.",
+      "price": 2900,
+      "image": "/images/Al%20Fakher%20Magic%20Love.jpg",
+      "badge": "New",
+      "category": "flavor"
+    },
+    {
+      "id": 3,
+      "name": "Mint Flavour",
+      "description": "Fresh, crisp mint with a clean and cooling smoke profile.",
+      "price": 3100,
+      "image": "/images/Al%20Fakher%20Mint%20Flavour%20250g.jpg",
+      "badge": "Limited",
+      "category": "flavor"
+    },
+    {
+      "id": 4,
+      "name": "Orange",
+      "description": "Bright citrus sparkle with a soft, juicy finish.",
+      "price": 2800,
+      "image": "/images/Al%20Fakher%20Orange%20flavor%20250g.jpg",
+      "badge": "Classic",
+      "category": "flavor"
+    },
+    {
+      "id": 5,
+      "name": "Two Apples",
+      "description": "Classic apple notes with a balanced, mellow smoke.",
+      "price": 3000,
+      "image": "/images/Al%20Fakher%20Two%20Apples%20Shisha%20Flavour.jpg",
+      "badge": "Fan Favorite",
+      "category": "flavor"
+    },
+    {
+      "id": 6,
+      "name": "Shisha Pot Set",
+      "description": "Premium glass pot and elegant setup for your lounge experience.",
+      "price": 6500,
+      "image": "/Hookah%204.png",
+      "badge": "Accessory",
+      "category": "pot"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1782595181810,
+      "orderNumber": "HS-181810-C25N",
+      "customerName": "Test Customer",
+      "phone": "0712345678",
+      "address": "123 Example Street",
+      "paymentMethod": "mpesa",
+      "notes": "",
+      "items": [
+        {
+          "id": 1,
+          "name": "Blueberry Mint",
+          "price": 3200,
+          "quantity": 1
+        }
+      ],
+      "rental": {
+        "enabled": true,
+        "nights": 1,
+        "amount": 1500
+      },
+      "subtotal": 3200,
+      "deliveryFee": 300,
+      "rentalFee": 1500,
+      "total": 5000,
+      "status": "pending",
+      "userId": null,
+      "createdBy": null,
+      "createdAt": "2026-06-27T21:19:41.810Z",
+      "updatedAt": "2026-06-27T21:19:41.811Z"
+    }
+  ],
+  "logs": [
+    {
+      "id": 1782595157268,
+      "type": "auth",
+      "message": "Logged in admin@hookah.store",
+      "userId": 1,
+      "createdAt": "2026-06-27T21:19:17.268Z"
+    },
+    {
+      "id": 1782595181811,
+      "type": "order",
+      "message": "Created order HS-181810-C25N",
+      "userId": null,
+      "createdAt": "2026-06-27T21:19:41.811Z"
+    },
+    {
+      "id": 1782595537071,
+      "type": "auth",
+      "message": "Registered user muitamaxwell@gmail.com",
+      "userId": 1782595536867,
+      "createdAt": "2026-06-27T21:25:37.071Z"
+    }
+  ]
+}
