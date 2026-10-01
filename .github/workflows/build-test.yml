@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Build & Test
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18.x, 20.x]
     
     steps:
     - uses: actions/checkout@v3
@@ -21,17 +21,27 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'npm'
     
     - name: Install dependencies
       run: npm ci
     
-    - name: Verify server syntax
+    - name: Check server syntax
       run: node -c server.js
     
-    - name: Run tests (if available)
-      run: npm test || echo "No tests configured"
+    - name: Run tests
+      run: npm test
+    
+    - name: Verify all HTML files
+      run: |
+        for file in public/*.html; do
+          echo "Checking $file"
+          grep -q "config.js" "$file" || echo "Warning: $file missing config.js"
+        done
 
-  deploy:
+  # Optional: Add this job for Heroku deployment
+  # Requires HEROKU_API_KEY secret to be set in GitHub repository settings
+  deploy-heroku:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -40,10 +50,11 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Deploy to Heroku
+      if: secrets.HEROKU_API_KEY != ''
       uses: AkhileshNS/heroku-deploy@v3.12.12
       with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
         heroku_app_name: "hookah-store"
-        heroku_email: "your-email@gmail.com"
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
         usedocker: false
       continue-on-error: true

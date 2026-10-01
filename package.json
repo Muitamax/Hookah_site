@@ -5,7 +5,9 @@
   "description": "Luxury hookah e-commerce storefront with Node.js backend",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "echo \"No tests configured\" && exit 0",
+    "lint": "echo \"No linter configured\" && exit 0"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
