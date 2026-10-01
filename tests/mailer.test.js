@@ -47,3 +47,25 @@ test('sendPasswordResetEmail builds a password reset message with a link', async
   assert.match(sent[0].subject, /password/i);
   assert.match(sent[0].html, /reset/i);
 });
+
+test('sendVerificationEmail falls back to localhost when the configured URL is a tunnel host', async () => {
+  process.env.APP_URL = 'https://866b-129-222-147-46.ngrok-free.app';
+  const sent = [];
+  const mailer = createMailer({
+    transporter: {
+      sendMail: async (options) => {
+        sent.push(options);
+        return { messageId: 'test-ngrok-fallback' };
+      },
+    },
+  });
+
+  await mailer.sendVerificationEmail({
+    to: 'customer@example.com',
+    name: 'Ada',
+  });
+
+  assert.equal(sent.length, 1);
+  assert.match(sent[0].html, /http:\/\/localhost:3001\/account\.html/);
+  delete process.env.APP_URL;
+});

@@ -1,0 +1,35 @@
+services:
+  db:
+    image: mariadb:10.5
+    container_name: cacti_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: cacti
+      MYSQL_USER: cactiuser
+      MYSQL_PASSWORD: cactipass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  cacti:
+    image: smcline06/cacti
+    container_name: cacti_app
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+ DB_HOST: db
+      DB_NAME: cacti
+      DB_USER: cactiuser
+      DB_PASS: cactipass
+      TZ: Africa/Nairobi
+    depends_on:
+      - db
+    volumes:
+      - cacti_data:/cacti
+
+volumes:
+  db_data:
+  cacti_data:
+
+

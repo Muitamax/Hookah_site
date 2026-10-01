@@ -22,9 +22,35 @@ const SITE_NAME = process.env.APP_NAME || 'Hookah Store';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.MAIL_TO || process.env.SMTP_USER || 'admin@hookah.store';
 const mailer = createMailer();
 
+function isSafeAppUrl(value) {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+    const hostname = url.hostname.toLowerCase();
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      return false;
+    }
+
+    if (hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === '127.0.0.1' || hostname === '::1') {
+      return true;
+    }
+
+    return !hostname.includes('ngrok');
+  } catch (error) {
+    return false;
+  }
+}
+
 function getAppUrl() {
   require('dotenv').config({ override: true });
-  return process.env.APP_URL || process.env.BASE_URL || `http://localhost:${PORT}`;
+  const configured = process.env.APP_URL || process.env.BASE_URL;
+  if (isSafeAppUrl(configured)) {
+    return configured;
+  }
+  return `http://localhost:${PORT}`;
 }
 
 const pool = mysql.createPool({

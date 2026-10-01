@@ -71,7 +71,7 @@ document.getElementById('confirmResetBtn').addEventListener('click', async () =>
   if (data.token) {
     localStorage.setItem('hookahToken', data.token);
     localStorage.setItem('hookahUser', JSON.stringify(data.user || {}));
-    window.location.href = params.get('next') || '/';
+    window.location.href = getPostAuthRedirect(params);
   }
 });
 
@@ -92,7 +92,7 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
   if (data.token) {
     localStorage.setItem('hookahToken', data.token);
     localStorage.setItem('hookahUser', JSON.stringify(data.user || data.profile || {}));
-    window.location.href = params.get('next') || '/';
+    window.location.href = getPostAuthRedirect(params);
   }
 });
 
@@ -114,6 +114,6 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
   if (data.user && data.token) {
     localStorage.setItem('hookahToken', data.token);
     localStorage.setItem('hookahUser', JSON.stringify(data.user || data.profile || {}));
-    window.location.href = params.get('next') || '/';
+    window.location.href = getPostAuthRedirect(params);
   }
 });
