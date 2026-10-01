@@ -65,7 +65,31 @@ const pool = mysql.createPool({
 });
 
 app.use(helmet());
-app.use(cors());
+
+// Configure CORS for different environments
+const allowedOrigins = [
+  'http://localhost:3001',
+  'http://localhost:3000',
+  'http://127.0.0.1:3001',
+  'https://muitamax.github.io',
+  'https://hookah-store-api.render.com',
+  process.env.APP_URL,
+  process.env.FRONTEND_URL,
+].filter(Boolean)
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
+
 app.use(express.json());
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -132,12 +156,27 @@ function createVerificationToken() {
   return crypto.randomBytes(24).toString('hex');
 }
 
+function getVerificationBaseUrl() {
+  // For production on GitHub Pages
+  if (process.env.NODE_ENV === 'production' && process.env.FRONTEND_URL) {
+    return process.env.FRONTEND_URL
+  }
+  // For production on Render (fallback)
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://muitamax.github.io/Hookah_site'
+  }
+  // For development
+  return getAppUrl()
+}
+
 function createVerificationUrl(token, email) {
-  return `${getAppUrl()}/api/auth/verify-email?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
+  const baseUrl = getVerificationBaseUrl()
+  return `${baseUrl}/account.html?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}&action=verify`;
 }
 
 function createResetUrl(token, email) {
-  return `${getAppUrl()}/account.html?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
+  const baseUrl = getVerificationBaseUrl()
+  return `${baseUrl}/account.html?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}&action=reset`;
 }
 
 function sanitizeUser(user) {

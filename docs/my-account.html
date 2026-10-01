@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Account • Hookah Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      body { padding: 0; }
+      .dashboard-shell { min-height: 100vh; }
+      .dashboard-main { padding: 24px 24px 48px 110px; }
+      .dashboard-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 24px; display: grid; gap: 16px; margin-bottom: 20px; }
+      .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+      .profile-stat { padding: 16px; border-radius: 16px; background: rgba(0,0,0,0.2); }
+      .list { display: grid; gap: 12px; }
+      .row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; background: rgba(255,255,255,0.05); border-radius: 14px; }
+      .muted { color: rgba(240,237,232,0.72); }
+      .pill { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; background: rgba(200,150,42,0.16); color: var(--amber); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.16em; }
+      .profile-form { display: grid; gap: 16px; }
+      .profile-form label { display: flex; flex-direction: column; gap: 8px; }
+      .profile-form input { border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 12px 14px; background: rgba(0,0,0,0.16); color: white; font: inherit; }
+      .profile-save { justify-self: flex-start; }
+      .profile-message { margin-top: 8px; min-height: 24px; }
+      .profile-message.success { color: #8ff0a4; }
+      .profile-message.error { color: #ffb4b4; }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="dashboard-sidebar">
+        <button class="sidebar-toggle" id="dashboardToggle" type="button">☰</button>
+        <div class="sidebar-brand">Hookah Store</div>
+        <div class="sidebar-profile" id="profileBadge">Guest</div>
+        <nav class="sidebar-links">
+          <a href="/" class="sidebar-link"><span class="sidebar-label">Storefront</span></a>
+          <a href="/my-account.html" class="sidebar-link active"><span class="sidebar-label">Account / Orders</span></a>
+          <a href="/admin.html" class="sidebar-link" id="adminNavLink"><span class="sidebar-label">Admin</span></a>
+          <a href="/sales.html" class="sidebar-link" id="salesNavLink"><span class="sidebar-label">Sales</span></a>
+          <a href="#" class="sidebar-link" id="logoutNavLink"><span class="sidebar-label">Logout</span></a>
+        </nav>
+      </aside>
+
+      <main class="dashboard-main">
+        <div class="dashboard-card">
+          <div class="pill">Customer profile</div>
+          <h1>My account</h1>
+          <p class="muted">View your profile, loyalty points, and the orders you've placed with Hookah Store.</p>
+          <div class="profile-grid" id="profileGrid"></div>
+          <form class="profile-form" id="profileForm">
+            <label>Name<input type="text" id="profileName" required /></label>
+            <label>Email<input type="email" id="profileEmail" required /></label>
+            <button class="primary-btn profile-save" type="submit">Save profile</button>
+            <div id="profileMessage" class="profile-message"></div>
+          </form>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="pill">Order history</div>
+          <div id="ordersList" class="list"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/config.js"></script>
+    <script src="/dashboard-nav.js"></script>
+    <script src="/my-account.js"></script>
+  </body>
+</html>

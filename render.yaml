@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: hookah-store-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    
+    autoDeploy: true
+    
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        scope: secret
+      - key: MYSQL_HOST
+        scope: secret
+      - key: MYSQL_USER
+        scope: secret
+      - key: MYSQL_PASSWORD
+        scope: secret
+      - key: MYSQL_PORT
+        value: "3306"
+      - key: MYSQL_DATABASE
+        value: hookah_store
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_SECURE
+        value: "true"
+      - key: SMTP_USER
+        scope: secret
+      - key: SMTP_PASS
+        scope: secret
+      - key: SMTP_FROM
+        scope: secret
+      - key: APP_URL
+        value: https://hookah-store-api.render.com
+      - key: FRONTEND_URL
+        value: https://muitamax.github.io/Hookah_site
+      - key: ADMIN_EMAIL
+        scope: secret

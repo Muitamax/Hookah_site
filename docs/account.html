@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account • Hookah Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      body { padding: 0; }
+      .auth-shell { max-width: 980px; margin: 0 auto; padding: 40px 24px 60px; }
+      .auth-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 24px; display: grid; gap: 20px; }
+      .stack { display: grid; gap: 12px; }
+      .switcher { display: flex; gap: 10px; }
+      .switcher button { padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; cursor: pointer; }
+      .switcher .active { background: var(--amber); color: var(--obsidian); }
+      .panel { display: none; }
+      .panel.active { display: block; }
+      .notice { margin-top: 12px; font-weight: 600; color: #ffd99b; }
+      .ghost-link { background: transparent; border: none; color: #ffd99b; padding: 0; cursor: pointer; text-align: left; }
+      .subtle { color: rgba(255,255,255,0.72); font-size: 0.95rem; }
+    </style>
+  </head>
+  <body>
+    <div class="auth-shell">
+      <a class="brand" href="/" style="display:inline-block; margin-bottom: 20px;">Hookah Store</a>
+      <div class="auth-card">
+        <div class="switcher">
+          <button class="active" data-mode="login">Login</button>
+          <button data-mode="register">Register</button>
+        </div>
+
+        <div class="panel active" id="loginPanel">
+          <h2>Welcome back</h2>
+          <form id="loginForm" class="stack">
+            <label>Email<input type="email" id="loginEmail" required /></label>
+            <label>Password<input type="password" id="loginPassword" required /></label>
+            <button class="primary-btn full" type="submit">Sign in</button>
+          </form>
+          <button class="ghost-link" id="forgotPasswordLink" type="button">Forgot password?</button>
+          <div class="stack" id="forgotPasswordPanel" style="display:none; margin-top: 12px;">
+            <label>Email<input type="email" id="forgotEmail" /></label>
+            <button class="primary-btn full" id="requestResetBtn" type="button">Send reset token</button>
+            <p class="subtle">If the account exists, the app will create a reset token for you to use below.</p>
+          </div>
+          <div class="stack" id="resetPasswordPanel" style="display:none; margin-top: 12px;">
+            <label>Reset token<input type="text" id="resetToken" /></label>
+            <label>New password<input type="password" id="newPassword" /></label>
+            <button class="primary-btn full" id="confirmResetBtn" type="button">Reset password</button>
+          </div>
+        </div>
+
+        <div class="panel" id="registerPanel">
+          <h2>Create an account</h2>
+          <form id="registerForm" class="stack">
+            <label>Name<input type="text" id="registerName" required /></label>
+            <label>Email<input type="email" id="registerEmail" required /></label>
+            <label>Password<input type="password" id="registerPassword" required /></label>
+            <button class="primary-btn full" type="submit">Create account</button>
+          </form>
+        </div>
+
+        <div id="authNotice" class="notice"></div>
+      </div>
+    </div>
+
+    <script src="/config.js"></script>
+    <script src="/auth-redirect.js"></script>
+    <script src="/account.js"></script>
+  </body>
+</html>

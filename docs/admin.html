@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin • Hookah Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      body { padding: 24px; }
+      .dashboard { max-width: 1200px; margin: 0 auto; display: grid; gap: 20px; }
+      .panel { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 20px; }
+      .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+      .card { background: rgba(0,0,0,0.16); padding: 16px; border-radius: 18px; }
+      .list { display: grid; gap: 10px; }
+      .row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+      .muted { color: rgba(240,237,232,0.72); }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-layout">
+      <aside class="dashboard-sidebar">
+        <button class="sidebar-toggle" id="dashboardToggle" type="button">☰</button>
+        <div class="sidebar-brand">Hookah Store</div>
+        <div class="sidebar-profile" id="profileBadge">Admin</div>
+        <nav class="sidebar-links">
+          <a href="/" class="sidebar-link"><span class="sidebar-label">Storefront</span></a>
+          <a href="/my-account.html" class="sidebar-link"><span class="sidebar-label">Account / Orders</span></a>
+          <a href="/admin.html" class="sidebar-link active" id="adminNavLink"><span class="sidebar-label">Admin</span></a>
+          <a href="/sales.html" class="sidebar-link" id="salesNavLink"><span class="sidebar-label">Sales</span></a>
+          <a href="#" class="sidebar-link" id="logoutNavLink"><span class="sidebar-label">Logout</span></a>
+        </nav>
+      </aside>
+
+      <main class="dashboard-main">
+        <div class="dashboard">
+          <h1>Admin dashboard</h1>
+          <p class="muted">Manage products, price changes, orders, and operational logs.</p>
+          <div class="panel">
+            <h2>Product manager</h2>
+            <form id="productForm" class="grid">
+              <label>Name<input type="text" id="productName" required /></label>
+              <label>Price<input type="number" id="productPrice" required /></label>
+              <label>Category<select id="productCategory"><option value="flavor">Flavor</option><option value="pot">Pot</option></select></label>
+              <label>Image URL<input type="text" id="productImage" /></label>
+              <label style="grid-column: 1 / -1;">Description<textarea id="productDescription"></textarea></label>
+              <button class="primary-btn" type="submit">Add product</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h2>Users</h2>
+            <div id="usersList" class="list"></div>
+          </div>
+          <div class="panel">
+            <h2>All orders</h2>
+            <div id="ordersList" class="list"></div>
+          </div>
+          <div class="panel">
+            <h2>Activity logs</h2>
+            <div id="logsList" class="list"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/config.js"></script>
+    <script src="/dashboard-nav.js"></script>
+    <script src="/admin.js"></script>
+  </body>
+</html>
