@@ -50,7 +50,8 @@ function getAppUrl() {
   if (isSafeAppUrl(configured)) {
     return configured;
   }
-  return `http://localhost:${PORT}`;
+  // Production Railway fallback
+  return 'https://hookahsite-production.up.railway.app';
 }
 
 const pool = mysql.createPool({
@@ -73,6 +74,7 @@ const allowedOrigins = [
   'http://127.0.0.1:3001',
   'https://muitamax.github.io',
   'https://hookah-store-api.render.com',
+  'https://hookahsite-production.up.railway.app',
   process.env.APP_URL,
   process.env.FRONTEND_URL,
 ].filter(Boolean)
@@ -157,13 +159,13 @@ function createVerificationToken() {
 }
 
 function getVerificationBaseUrl() {
-  // For production on GitHub Pages
+  // For production with explicit FRONTEND_URL
   if (process.env.NODE_ENV === 'production' && process.env.FRONTEND_URL) {
     return process.env.FRONTEND_URL
   }
-  // For production on Render (fallback)
+  // For production on Railway
   if (process.env.NODE_ENV === 'production') {
-    return 'https://muitamax.github.io/Hookah_site'
+    return 'https://hookahsite-production.up.railway.app'
   }
   // For development
   return getAppUrl()
@@ -576,113 +578,102 @@ app.post('/api/orders', requireAuth, async (req, res) => {
     paymentMethod,
     notes: notes || '',
     items,
-    rental: rental || { enabled: false, nights: 1, amount: 1500 },
-    subtotal,
-    deliveryFee,
-    rentalFee,
-    total,
-    status: 'pending',
+    rental: rental || { enabled: false, nights: 1, amount: 0 },
   };
 
   const [result] = await pool.query(
     'INSERT INTO orders (order_number, user_id, customer_name, phone, address, payment_method, notes, items, rental, subtotal, delivery_fee, rental_fee, total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [orderNumber, req.user.id, name, phone, address, paymentMethod, notes || '', JSON.stringify(items), JSON.stringify(orderData.rental), subtotal, deliveryFee, rentalFee, total, 'pending']
+    [orderNumber, req.user.id, name, phone, address, paymentMethod, notes || '', JSON.stringify(items), JSON.stringify(rental || {}), subtotal, deliveryFee, rentalFee, total, 'pending']
   );
 
   await pool.query('UPDATE users SET loyalty_points = loyalty_points + ? WHERE id = ?', [pointsEarned, req.user.id]);
-  const [updatedUserRows] = await pool.query('SELECT id, name, email, role, loyalty_points, created_at FROM users WHERE id = ?', [req.user.id]);
-  req.user = updatedUserRows[0];
-  req.userId = req.user.id;
-  req.profile = req.user;
+  try {
+    await mailer.sendOrderConfirmationEmail({ to: req.user.email, name: req.user.name, order: { orderNumber, customerName: name, phone, address, paymentMethod, notes, items, subtotal, deliveryFee, rentalFee, total } });
+  } catch (error) {
+    console.error('Order confirmation email failed:', error.message);
+  }
 
   try {
-    await mailer.sendOrderConfirmationEmail({
-      to: req.user.email,
-      name: req.user.name,
-      order: { id: result.insertId, ...orderData },
-    });
-
-    await mailer.sendOrderNotificationEmail({
-      to: ADMIN_EMAIL,
-      order: { id: result.insertId, ...orderData },
-      customerEmail: req.user.email,
-      customerName: req.user.name,
-    });
+    await mailer.sendOrderNotificationEmail({ to: ADMIN_EMAIL, order: orderData, customerEmail: req.user.email, customerName: req.user.name });
   } catch (error) {
-    console.error('Order email failed:', error.message);
+    console.error('Admin notification email failed:', error.message);
   }
 
   await logEvent('order', `Created order ${orderNumber}`, req.user.id);
-  res.json({ success: true, orderNumber, total, deliveryFee, rentalFee, paymentMethod, user: sanitizeUser(req.user), profile: sanitizeUser(req.user), loyaltyPoints: Number(req.user.loyalty_points || 0), pointsEarned, message: 'Order received. We will confirm your delivery shortly.' });
+  res.status(201).json({
+    order: {
+      id: result.insertId,
+      orderNumber,
+      customerName: name,
+      phone,
+      address,
+      paymentMethod,
+      notes,
+      items,
+      rental,
+      subtotal,
+      deliveryFee,
+      rentalFee,
+      total,
+      status: 'pending',
+    },
+    message: 'Order created successfully. You will receive a confirmation email shortly.',
+    pointsEarned,
+  });
 });
 
-app.patch('/api/orders/:id/status', requireAuth, requireRoles('admin', 'sales'), async (req, res) => {
+app.put('/api/orders/:id/status', requireAuth, requireRoles('admin', 'sales'), async (req, res) => {
+  const { id } = req.params;
   const { status } = req.body;
-  const [rows] = await pool.query('SELECT id FROM orders WHERE id = ?', [req.params.id]);
+  if (!status || !['pending', 'confirmed', 'ready', 'delivered', 'cancelled'].includes(status)) {
+    return res.status(400).json({ message: 'Invalid order status.' });
+  }
+
+  const [rows] = await pool.query('SELECT id FROM orders WHERE id = ?', [id]);
   if (!rows.length) {
     return res.status(404).json({ message: 'Order not found.' });
   }
 
-  await pool.query('UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [status, req.params.id]);
-  await logEvent('order', `Updated order ${req.params.id} to ${status}`, req.user.id);
-  const [updated] = await pool.query('SELECT * FROM orders WHERE id = ?', [req.params.id]);
-  res.json({ order: updated[0] });
+  await pool.query('UPDATE orders SET status = ? WHERE id = ?', [status, id]);
+  const [updated] = await pool.query('SELECT * FROM orders WHERE id = ?', [id]);
+  await logEvent('order', `Updated order ${updated[0].order_number} status to ${status}`, req.user.id);
+  res.json({ order: updated[0], message: 'Order status updated.' });
 });
 
 app.get('/api/admin/users', requireAuth, requireRoles('admin'), async (req, res) => {
-  const [rows] = await pool.query('SELECT id, name, email, role, loyalty_points, created_at FROM users ORDER BY created_at DESC');
-  res.json({ users: rows });
+  const [rows] = await pool.query('SELECT id, name, email, role, loyalty_points, is_verified, created_at FROM users ORDER BY created_at DESC');
+  res.json({ users: rows.map(sanitizeUser) });
 });
 
 app.get('/api/admin/access-logs', requireAuth, requireRoles('admin'), async (req, res) => {
-  const [rows] = await pool.query('SELECT * FROM access_logs ORDER BY created_at DESC LIMIT 50');
-  res.json({ logs: rows });
-});
-
-app.get('/api/logs', requireAuth, requireRoles('admin'), async (req, res) => {
-  const [rows] = await pool.query('SELECT * FROM access_logs ORDER BY created_at DESC LIMIT 100');
+  const [rows] = await pool.query('SELECT * FROM access_logs ORDER BY created_at DESC LIMIT 500');
   res.json({ logs: rows });
 });
 
 app.post('/api/admin/send-site-report', requireAuth, requireRoles('admin'), async (req, res) => {
-  const [userCountRows] = await pool.query('SELECT COUNT(*) AS count FROM users');
-  const [verifiedUserRows] = await pool.query('SELECT COUNT(*) AS count FROM users WHERE is_verified = 1');
-  const [orderCountRows] = await pool.query('SELECT COUNT(*) AS count FROM orders');
-  const [pendingOrderRows] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'pending'");
-  const [visitCountRows] = await pool.query('SELECT COUNT(*) AS count FROM access_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)');
-  const [activeUserRows] = await pool.query('SELECT COUNT(DISTINCT user_id) AS count FROM access_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) AND user_id IS NOT NULL');
+  const [userCount] = await pool.query('SELECT COUNT(*) AS count FROM users');
+  const [orderCount] = await pool.query('SELECT COUNT(*) AS count FROM orders');
+  const [productCount] = await pool.query('SELECT COUNT(*) AS count FROM products');
+  const [revenueResult] = await pool.query('SELECT SUM(total) AS total FROM orders');
 
-  const report = {
-    users: Number(userCountRows[0].count || 0),
-    verifiedUsers: Number(verifiedUserRows[0].count || 0),
-    orders: Number(orderCountRows[0].count || 0),
-    pendingOrders: Number(pendingOrderRows[0].count || 0),
-    visits24h: Number(visitCountRows[0].count || 0),
-    activeUsers24h: Number(activeUserRows[0].count || 0),
+  const summary = {
+    'Total Users': userCount[0].count,
+    'Total Orders': orderCount[0].count,
+    'Total Products': productCount[0].count,
+    'Total Revenue': `Ksh ${Number(revenueResult[0].total || 0).toFixed(2)}`,
   };
 
   try {
-    await mailer.sendSiteReportEmail({
-      to: ADMIN_EMAIL,
-      subject: `${SITE_NAME} activity report`,
-      summary: report,
-    });
-    await logEvent('admin', 'Sent site report email', req.user.id);
-    res.json({ success: true, message: 'Site report email sent to the administrator.', report });
+    await mailer.sendSiteReportEmail({ to: ADMIN_EMAIL, subject: `${SITE_NAME} - Activity Report`, summary });
   } catch (error) {
-    console.error('Site report email failed:', error.message);
-    res.status(500).json({ message: 'Site report email could not be sent.', report });
+    return res.status(500).json({ message: 'Failed to send report email.', error: error.message });
   }
+
+  await logEvent('admin', 'Sent site report', req.user.id);
+  res.json({ message: 'Report sent successfully.', summary });
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.listen(PORT, () => {
+  console.log(`Hookah Store running on https://hookahsite-production.up.railway.app`);
 });
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Hookah Store running on http://localhost:${PORT}`);
-  });
-}
-
-module.exports = app;

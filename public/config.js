@@ -7,9 +7,14 @@
 
 // Determine API base URL based on environment
 const getApiBaseUrl = () => {
-  // GitHub Pages + Render production
+  // GitHub Pages
   if (window.location.hostname === 'muitamax.github.io') {
     return 'https://hookah-store-api.render.com'
+  }
+  
+  // Railway production
+  if (window.location.hostname === 'hookahsite-production.up.railway.app') {
+    return ''  // Use relative URLs for same-origin
   }
   
   // Local development
@@ -18,7 +23,7 @@ const getApiBaseUrl = () => {
   }
   
   // Default: use same origin (for other deployments)
-  return ''
+  return ''\
 };
 
 const CONFIG = {
@@ -57,7 +62,7 @@ const CONFIG = {
 
   // App Settings
   APP_NAME: 'Hookah Store',
-  SITE_URL: window.location.origin || 'http://localhost:3001',
+  SITE_URL: window.location.origin || 'https://hookahsite-production.up.railway.app',
   DELIVERY_FEE: 300,
   
   // Auth Settings
@@ -258,3 +263,4 @@ const StorageHelper = {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { CONFIG, ApiHelper, AuthHelper, StorageHelper };
 }
+
